@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UFOキャッチャー | 北海道アブダクション</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="map.css">
+</head>
+<body>
+  <main id="game" class="game" aria-label="UFOキャッチャーゲーム">
+    <div id="backgroundBase" class="background-layer background-base" aria-hidden="true"></div>
+    <div id="backgroundOverlay" class="background-layer background-overlay" aria-hidden="true"></div>
+    <div class="sky-glow"></div>
+    <header class="hud">
+      <div class="brand"><span>HOKKAIDO</span><strong>UFO CATCHER</strong><em id="stage">STAGE 1</em></div>
+      <div class="score-box"><span>SCORE</span><strong id="score">000000</strong></div>
+    </header>
+    <section class="scene" id="scene">
+      <div class="cloud cloud-a"></div><div class="cloud cloud-b"></div>
+      <div class="sea"></div>
+      <div class="hokkaido-shadow"></div>
+      <div class="hokkaido-map">
+        <div class="terrain terrain-a"></div><div class="terrain terrain-b"></div>
+        <div class="terrain terrain-c"></div><div class="terrain terrain-d"></div>
+        <div class="river river-a"></div><div class="river river-b"></div>
+        <div class="farm-patch patch-a"></div><div class="farm-patch patch-b"></div><div class="farm-patch patch-c"></div>
+      </div>
+      <div id="reticle" class="reticle"><i></i></div>
+      <div id="target-line-x" class="target-line target-line-x"></div>
+      <div id="target-line-y" class="target-line target-line-y"></div>
+      <div id="beam" class="beam" aria-hidden="true"><div class="beam-core"></div><div id="particles" class="particles"></div></div>
+      <div id="ufo" class="ufo" aria-label="UFO">
+        <div class="ufo-float"><div class="dome"><span></span></div><div class="saucer"><i></i><i></i><i></i><i></i><i></i></div><div class="emitter"></div></div>
+      </div>
+      <div id="objects" class="objects"></div><div id="flash" class="flash"></div>
+    </section>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <div class="audio-controls" aria-label="音量設定">
+      <div id="trackName" class="track-name" aria-live="polite">青い光のランデブー</div>
+      <button id="bgmToggle" type="button" aria-pressed="true" aria-label="BGMをオフにする"><span>♫</span><small>BGM</small></button>
+      <button id="seToggle" type="button" aria-pressed="true" aria-label="効果音をオフにする"><span>🔊</span><small>SE</small></button>
+    </div>
+    <footer class="controls">
+      <div id="phaseBadge" class="phase-badge">PHASE 1</div>
+      <div class="instruction"><kbd id="controlKey">SPACE / CLICK</kbd><span id="instruction">縦位置を決定</span></div>
+      <p id="subtext">上下に動くUFOを狙いの高さで止めよう</p>
+    </footer>
+    <section id="ending" class="ending" aria-label="プレイリザルト" aria-hidden="true">
+      <div class="credits-window">
+        <div id="creditsRoll" class="credits-roll"></div>
+      </div>
+      <div id="endingActions" class="ending-actions">
+        <p>Thank you for playing.</p>
+        <div>
+          <button id="replayCredits" type="button">リザルトをもう一度見る</button>
+          <button id="restartGame" type="button">もう一度プレイする</button>
+        </div>
+      </div>
+    </section>
+    <button id="startButton" class="start-button" type="button">SPACEでスタート</button>
+  </main>
+  <script src="result-settings.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

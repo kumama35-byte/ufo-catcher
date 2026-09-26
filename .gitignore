@@ -1,0 +1,8 @@
+node_modules/
+sources/
+build_result_settings.mjs
+read_result_settings.mjs
+outputs/ufo-catcher-settings/preview*.png
+outputs/ufo-catcher-settings/*.inspect.ndjson
+Thumbs.db
+.DS_Store
