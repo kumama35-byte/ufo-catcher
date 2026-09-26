@@ -23,7 +23,7 @@
   const backgrounds=["assets/background/day.png","assets/background/evening.png","assets/background/night.png"],backgroundNames=["昼","夕方","夜"];
   // 背景画像上で陸地に当たる地点だけを登録する。
   const LAND_SPOTS=[[17,61],[21,56],[23,52],[27,63],[29,57],[31,49],[34,47],[36,39],[39,36],[41,58],[43,50],[45,29],[47,42],[49,58],[52,35],[54,46],[56,30],[58,52],[59,36],[62,55],[65,44],[68,48],[70,34],[73,36],[75,52],[77,48],[82,41]];
-  const CAPTURE_ZONES={center:1.6,ring:4,beam:7.5};
+  const CAPTURE_ZONES={center:2.1,ring:4,beam:7.5};
 
   function tone(frequency,duration=.08,volume=.045,type="sine",delay=0){
     if(!seEnabled)return;
