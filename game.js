@@ -13,7 +13,7 @@
     {title:"青い光のランデブー",src:"assets/sounds/bgm.mp3"},
     {title:"キノコは宇宙人だという事が判明",src:"assets/sounds/mushroom-alien.mp3"}
   ];
-  const endingTrack={title:"青い光のランデブー Avant Garde Pop",src:"assets/sounds/ending.mp3"};
+  const endingTrack={title:"青い光のランデブー Avant Garde Pop ver.",src:"assets/sounds/ending.mp3"};
   const resultSettings=window.UNIT_RESULT_SETTINGS||{};
   let bgmTrackIndex=0;
   const bgm=new Audio(bgmTracks[bgmTrackIndex].src);bgm.loop=false;bgm.volume=.34;
