@@ -73,3 +73,7 @@
 .score-box{margin-right:4.6em}.game.ending-mode .audio-controls{right:6.5%}
 .game.ranking-qualified .ranking-toggle{color:#fff36d;border-color:#fff36d;background:rgba(67,45,0,.92);animation:rankingButtonGlow .65s ease-in-out infinite alternate}@keyframes rankingButtonGlow{to{scale:1.12;box-shadow:0 0 7px #fff,0 0 18px #ffd000,0 0 34px #ff8c00}}
 @media(max-width:700px){.ranking-toggle{top:1%;right:1%;min-width:2.65em;padding:.35em}.ranking-toggle span{font-size:clamp(13px,3.3vw,20px)}.ranking-toggle small{font-size:7px}.score-box{margin-right:3.3em}.game.ending-mode .audio-controls{right:12%}}
+
+/* ゲーム中は音量設定の末尾、リザルトでは同じ並びの右端に表示 */
+.ranking-toggle{position:static}.score-box{margin-right:0}.game.ending-mode .audio-controls{right:2%}
+@media(max-width:700px){.score-box{margin-right:0}.game.ending-mode .audio-controls{right:1%}}
