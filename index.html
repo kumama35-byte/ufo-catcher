@@ -40,6 +40,7 @@
       <div id="trackName" class="track-name" aria-live="polite">青い光のランデブー</div>
       <button id="bgmToggle" type="button" aria-pressed="true" aria-label="BGMをオフにする"><span>♫</span><small>BGM</small></button>
       <button id="seToggle" type="button" aria-pressed="true" aria-label="効果音をオフにする"><span>🔊</span><small>SE</small></button>
+      <button id="rankingToggle" class="ranking-toggle" type="button" aria-label="オンラインランキングを表示"><span>🏆</span><small>RANK</small></button>
     </div>
     <footer class="controls">
       <div id="phaseBadge" class="phase-badge">PHASE 1</div>
@@ -52,15 +53,32 @@
       </div>
       <div id="endingActions" class="ending-actions">
         <p>Thank you for playing.</p>
+        <strong id="rankingNotice" class="ranking-notice" aria-live="polite"></strong>
         <div>
           <button id="replayCredits" type="button">リザルトをもう一度見る</button>
           <button id="restartGame" type="button">もう一度プレイする</button>
         </div>
       </div>
     </section>
+    <dialog id="rankingDialog" class="ranking-dialog" aria-labelledby="rankingTitle">
+      <div class="ranking-panel">
+        <button id="rankingClose" class="ranking-close" type="button" aria-label="ランキングを閉じる">✕</button>
+        <h2 id="rankingTitle">ONLINE RANKING</h2>
+        <p class="ranking-subtitle">BEST 30</p>
+        <div id="rankingStatus" class="ranking-status">ランキングを読み込み中…</div>
+        <div id="rankingEdit" class="ranking-edit" hidden>
+          <label for="rankingName">ランキング名（10文字まで）</label>
+          <div><input id="rankingName" type="text" maxlength="10" autocomplete="off"><button id="rankingNameSave" type="button">保存</button></div>
+          <small id="rankingNameError" role="alert"></small>
+        </div>
+        <ol id="rankingList" class="ranking-list"></ol>
+      </div>
+    </dialog>
     <button id="startButton" class="start-button" type="button">SPACEでスタート</button>
   </main>
   <script src="result-settings.js"></script>
+  <script src="ranking-config.js"></script>
   <script src="game.js"></script>
+  <script src="ranking.js"></script>
 </body>
 </html>
