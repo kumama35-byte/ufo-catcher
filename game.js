@@ -94,5 +94,5 @@
   els.creditsRoll.addEventListener("animationend",event=>{if(event.animationName==="creditsScroll")els.endingActions.classList.add("show")});
   els.replayCredits.addEventListener("click",event=>{event.stopPropagation();replayCredits()});
   els.restartGame.addEventListener("click",event=>{event.stopPropagation();restartGame()});
-  els.startButton.classList.add("hidden");els.game.classList.add("alt-sprites");els.controlKey.textContent=touchMode?"TAP":"SPACE / CLICK";ufoFloat.style.backgroundImage='url("assets/characters/frames/ufo-1.png")';updateAudioButtons();renderBackground();startStage();preloadActiveSpriteFrames().finally(()=>{previousTime=performance.now();requestAnimationFrame(animate)});
+  els.startButton.classList.add("hidden");els.game.classList.add("alt-sprites");els.controlKey.textContent=touchMode?"TAP":"SPACE / CLICK";ufoFloat.style.backgroundImage='url("assets/characters/frames/ufo-1.png")';updateAudioButtons();renderBackground();startStage();preloadActiveSpriteFrames();previousTime=performance.now();requestAnimationFrame(animate);
 })();
