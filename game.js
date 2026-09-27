@@ -8,9 +8,11 @@
   let playStats={plays:0,successes:0,failures:0,nearMisses:0,caught:[],counts:{}};
   const ufoFloat=els.ufo.querySelector(".ufo-float");
   const touchMode=matchMedia("(pointer: coarse)").matches;
-  let pointerActive=false,lastTouchInputAt=0;
+  let pointerActive=false,lastTouchInputAt=0,lastInteractionAt=performance.now();
+  const IDLE_BACKGROUND_INTERVAL=60000;
   const uiSelector="button,input,textarea,select,a,[role='button'],[contenteditable='true'],dialog";
   const isUIEvent=event=>Boolean(event.target.closest?.(uiSelector));
+  const noteInteraction=()=>{lastInteractionAt=performance.now()};
   const bgmTracks=[
     {title:"青い光のランデブー",src:"assets/sounds/bgm.mp3"},
     {title:"キノコは宇宙人だという事が判明",src:"assets/sounds/mushroom-alien.mp3"}
@@ -45,6 +47,7 @@
   function updateUnitLighting(){els.game.style.setProperty("--unit-brightness",String(1-nightAmount()*.5))}
   function renderBackground(resetOverlay=false){const next=(backgroundIndex+1)%backgrounds.length;els.backgroundBase.style.backgroundImage=`url("${backgrounds[backgroundIndex]}")`;if(resetOverlay){els.backgroundOverlay.style.transition="none";els.backgroundOverlay.style.opacity="0";els.backgroundOverlay.style.backgroundImage=`url("${backgrounds[next]}")`;void els.backgroundOverlay.offsetWidth;els.backgroundOverlay.style.transition="opacity .9s ease";requestAnimationFrame(()=>{els.backgroundOverlay.style.opacity=String(backgroundStep/10)})}else{els.backgroundOverlay.style.backgroundImage=`url("${backgrounds[next]}")`;els.backgroundOverlay.style.opacity=String(backgroundStep/10)}updateUnitLighting()}
   function advanceBackground(debug=false){let resetOverlay=false;if(backgroundStep<10)backgroundStep++;else{backgroundIndex=(backgroundIndex+1)%backgrounds.length;backgroundStep=1;resetOverlay=true}renderBackground(resetOverlay);if(debug){const next=(backgroundIndex+1)%backgrounds.length;showToast(`背景：${backgroundNames[backgroundIndex]} 100% ＋ ${backgroundNames[next]} ${backgroundStep*10}%`);setTimeout(()=>{if(phase!=="result")els.toast.classList.remove("show")},1200)}}
+  function advanceIdleBackground(){if(endingMode)return;const now=performance.now(),steps=Math.floor((now-lastInteractionAt)/IDLE_BACKGROUND_INTERVAL);if(steps<1)return;for(let i=0;i<steps;i++)advanceBackground();lastInteractionAt+=steps*IDLE_BACKGROUND_INTERVAL}
   function frameUrl(kind,frame,caught=false){if(kind.startsWith("human_"))return `assets/characters/frames-human/${kind}-${caught?4:(frame-1)%3+1}.png`;if(altSpriteMode)return `assets/characters/frames-alt/${kind}-${caught?4:(frame-1)%3+1}.png`;return `assets/characters/frames/${kind}-${caught?8:frame}.png`}
   function captureChance(item,distance){if(distance<=CAPTURE_ZONES.center)return 1;let chance=distance<=CAPTURE_ZONES.ring ? .75 : .5;if(item.type.id==="cat"||item.type.id==="human_child")chance+=.1;if(item.type.id==="cow")chance-=.1;return Math.max(0,Math.min(1,chance))}
   function preloadActiveSpriteFrames(){const urls=[...TYPES.flatMap(type=>Array.from({length:4},(_,i)=>`assets/characters/frames-alt/${type.id}-${i+1}.png`)),...HUMAN_TYPES.flatMap(type=>Array.from({length:4},(_,i)=>`assets/characters/frames-human/${type.id}-${i+1}.png`))];return Promise.all(urls.map(url=>new Promise(resolve=>{const image=new Image();spriteImageCache.push(image);image.onload=async()=>{try{await image.decode?.()}catch(_){/* 読み込み済みならそのまま使用 */}resolve()};image.onerror=resolve;image.src=url})))}
@@ -90,7 +93,8 @@
   function animate(time){const dt=Math.min((time-previousTime)/1000,.05);previousTime=time;const frameCount=altSpriteMode?3:7,frame=Math.floor(time/128)%frameCount+1;if(frame!==currentFrame){currentFrame=frame;critters.forEach(item=>{if(!item.el.classList.contains("abducting")&&!item.el.classList.contains("near-miss"))item.el.querySelector(".sprite-art").style.backgroundImage=`url("${frameUrl(item.type.id,frame)}")`})}if(phase==="verticalMoving"){y=Math.max(28,y-20*dt);updatePosition()}else if(phase==="horizontalMoving"){x=Math.min(86,x+28*dt);updatePosition()}requestAnimationFrame(animate)}
   function beginControl(){playBGM();if(phase==="vertical"){phase="verticalMoving";tone(390,.08,.025,"square");updateUI()}else if(phase==="horizontal"){phase="horizontalMoving";tone(470,.08,.025,"square");updateUI()}}
   function endControl(){if(phase==="verticalMoving"){phase="horizontal";playDecision();updateUI()}else if(phase==="horizontalMoving"){phase="locked";playDecision();critters.forEach(item=>item.el.classList.toggle("targeted",Math.hypot((item.x-x)/1.25,item.y-y)<=CAPTURE_ZONES.beam));updateUI();setTimeout(fireBeam,280)}}
-  document.addEventListener("keydown",event=>{if(isUIEvent(event))return;if(event.ctrlKey&&event.key.toLowerCase()==="c"){event.preventDefault();if(!event.repeat&&!endingMode)startEnding(true);return}if(event.key==="Tab"){event.preventDefault();if(!event.repeat)advanceBackground(true);return}if(event.ctrlKey&&event.key.toLowerCase()==="d"){event.preventDefault();if(!event.repeat)toggleSpriteMode();return}if(event.code!=="Space"||event.repeat)return;event.preventDefault();beginControl()});
+  document.addEventListener("pointerdown",noteInteraction,{capture:true,passive:true});
+  document.addEventListener("keydown",event=>{noteInteraction();if(isUIEvent(event))return;if(event.ctrlKey&&event.key.toLowerCase()==="c"){event.preventDefault();if(!event.repeat&&!endingMode)startEnding(true);return}if(event.key==="Tab"){event.preventDefault();if(!event.repeat)advanceBackground(true);return}if(event.ctrlKey&&event.key.toLowerCase()==="d"){event.preventDefault();if(!event.repeat)toggleSpriteMode();return}if(event.code!=="Space"||event.repeat)return;event.preventDefault();beginControl()});
   document.addEventListener("keyup",event=>{if(isUIEvent(event)||event.code!=="Space")return;event.preventDefault();endControl()});
   els.game.addEventListener("pointerdown",event=>{if(isUIEvent(event)||event.isPrimary===false||(event.pointerType==="mouse"&&event.button!==0))return;event.preventDefault();playBGM();const touchInput=event.pointerType!=="mouse"||touchMode;if(touchInput){const now=performance.now();if(now-lastTouchInputAt<180)return;lastTouchInputAt=now;if(phase==="vertical"||phase==="horizontal")beginControl();else if(phase==="verticalMoving"||phase==="horizontalMoving")endControl();return}if(pointerActive)return;pointerActive=true;els.game.setPointerCapture?.(event.pointerId);beginControl()});
   els.game.addEventListener("pointerup",event=>{if(event.pointerType!=="mouse"||!pointerActive)return;event.preventDefault();pointerActive=false;endControl()});
@@ -106,4 +110,5 @@
   els.replayCredits.addEventListener("click",event=>{event.stopPropagation();replayCredits()});
   els.restartGame.addEventListener("click",event=>{event.stopPropagation();restartGame()});
   els.startButton.classList.add("hidden");els.game.classList.add("alt-sprites");els.controlKey.textContent=touchMode?"TAP":"SPACE / CLICK";ufoFloat.style.backgroundImage='url("assets/characters/frames/ufo-1.png")';updateAudioButtons();renderBackground();startStage();preloadActiveSpriteFrames();previousTime=performance.now();requestAnimationFrame(animate);
+  setInterval(advanceIdleBackground,1000);
 })();
