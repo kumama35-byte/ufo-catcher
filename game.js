@@ -8,7 +8,9 @@
   let playStats={plays:0,successes:0,failures:0,nearMisses:0,caught:[],counts:{}};
   const ufoFloat=els.ufo.querySelector(".ufo-float");
   const touchMode=matchMedia("(pointer: coarse)").matches;
-  let pointerActive=false;
+  let pointerActive=false,lastTouchInputAt=0;
+  const uiSelector="button,input,textarea,select,a,[role='button'],[contenteditable='true'],dialog";
+  const isUIEvent=event=>Boolean(event.target.closest?.(uiSelector));
   const bgmTracks=[
     {title:"青い光のランデブー",src:"assets/sounds/bgm.mp3"},
     {title:"キノコは宇宙人だという事が判明",src:"assets/sounds/mushroom-alien.mp3"}
@@ -88,11 +90,14 @@
   function animate(time){const dt=Math.min((time-previousTime)/1000,.05);previousTime=time;const frameCount=altSpriteMode?3:7,frame=Math.floor(time/128)%frameCount+1;if(frame!==currentFrame){currentFrame=frame;critters.forEach(item=>{if(!item.el.classList.contains("abducting")&&!item.el.classList.contains("near-miss"))item.el.querySelector(".sprite-art").style.backgroundImage=`url("${frameUrl(item.type.id,frame)}")`})}if(phase==="verticalMoving"){y=Math.max(28,y-20*dt);updatePosition()}else if(phase==="horizontalMoving"){x=Math.min(86,x+28*dt);updatePosition()}requestAnimationFrame(animate)}
   function beginControl(){playBGM();if(phase==="vertical"){phase="verticalMoving";tone(390,.08,.025,"square");updateUI()}else if(phase==="horizontal"){phase="horizontalMoving";tone(470,.08,.025,"square");updateUI()}}
   function endControl(){if(phase==="verticalMoving"){phase="horizontal";playDecision();updateUI()}else if(phase==="horizontalMoving"){phase="locked";playDecision();critters.forEach(item=>item.el.classList.toggle("targeted",Math.hypot((item.x-x)/1.25,item.y-y)<=CAPTURE_ZONES.beam));updateUI();setTimeout(fireBeam,280)}}
-  document.addEventListener("keydown",event=>{if(event.ctrlKey&&event.key.toLowerCase()==="c"){event.preventDefault();if(!event.repeat&&!endingMode)startEnding(true);return}if(event.key==="Tab"){event.preventDefault();if(!event.repeat)advanceBackground(true);return}if(event.ctrlKey&&event.key.toLowerCase()==="d"){event.preventDefault();if(!event.repeat)toggleSpriteMode();return}if(event.code!=="Space"||event.repeat)return;event.preventDefault();beginControl()});
-  document.addEventListener("keyup",event=>{if(event.code!=="Space")return;event.preventDefault();endControl()});
-  els.game.addEventListener("pointerdown",event=>{if(event.pointerType==="mouse"&&event.button!==0)return;event.preventDefault();playBGM();if(touchMode){if(phase==="vertical"||phase==="horizontal")beginControl();else if(phase==="verticalMoving"||phase==="horizontalMoving")endControl();return}pointerActive=true;els.game.setPointerCapture?.(event.pointerId);beginControl()});
-  els.game.addEventListener("pointerup",event=>{if(touchMode||!pointerActive)return;event.preventDefault();pointerActive=false;endControl()});
-  els.game.addEventListener("pointercancel",()=>{if(!touchMode&&pointerActive){pointerActive=false;endControl()}});
+  document.addEventListener("keydown",event=>{if(isUIEvent(event))return;if(event.ctrlKey&&event.key.toLowerCase()==="c"){event.preventDefault();if(!event.repeat&&!endingMode)startEnding(true);return}if(event.key==="Tab"){event.preventDefault();if(!event.repeat)advanceBackground(true);return}if(event.ctrlKey&&event.key.toLowerCase()==="d"){event.preventDefault();if(!event.repeat)toggleSpriteMode();return}if(event.code!=="Space"||event.repeat)return;event.preventDefault();beginControl()});
+  document.addEventListener("keyup",event=>{if(isUIEvent(event)||event.code!=="Space")return;event.preventDefault();endControl()});
+  els.game.addEventListener("pointerdown",event=>{if(isUIEvent(event)||event.isPrimary===false||(event.pointerType==="mouse"&&event.button!==0))return;event.preventDefault();playBGM();const touchInput=event.pointerType!=="mouse"||touchMode;if(touchInput){const now=performance.now();if(now-lastTouchInputAt<180)return;lastTouchInputAt=now;if(phase==="vertical"||phase==="horizontal")beginControl();else if(phase==="verticalMoving"||phase==="horizontalMoving")endControl();return}if(pointerActive)return;pointerActive=true;els.game.setPointerCapture?.(event.pointerId);beginControl()});
+  els.game.addEventListener("pointerup",event=>{if(event.pointerType!=="mouse"||!pointerActive)return;event.preventDefault();pointerActive=false;endControl()});
+  els.game.addEventListener("pointercancel",()=>{pointerActive=false});
+  els.game.addEventListener("lostpointercapture",()=>{pointerActive=false});
+  ["selectstart","dragstart","contextmenu"].forEach(type=>els.game.addEventListener(type,event=>{if(!isUIEvent(event))event.preventDefault()}));
+  els.game.addEventListener("gesturestart",event=>event.preventDefault(),{passive:false});
   [els.bgmToggle,els.seToggle,els.replayCredits,els.restartGame].forEach(button=>button.addEventListener("pointerdown",event=>event.stopPropagation()));
   els.bgmToggle.addEventListener("click",event=>{event.stopPropagation();bgmEnabled=!bgmEnabled;if(bgmEnabled)playBGM();else bgm.pause();updateAudioButtons()});
   bgm.addEventListener("ended",()=>{if(endingMode)return;bgmTrackIndex=(bgmTrackIndex+1)%bgmTracks.length;bgm.src=bgmTracks[bgmTrackIndex].src;updateAudioButtons();playBGM()});
