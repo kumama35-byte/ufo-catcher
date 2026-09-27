@@ -82,3 +82,7 @@
 html,body{height:100%;min-height:0;overflow:hidden;overscroll-behavior:none;-webkit-user-select:none;user-select:none}body{position:fixed;inset:0;width:100%;height:100%;touch-action:none}
 .game,.game *{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;-webkit-user-drag:none}.game{touch-action:none;overscroll-behavior:none}.game button,.game input,.game textarea,.game select,.game a,.game [role="button"]{touch-action:manipulation}.ranking-panel{touch-action:pan-y;-webkit-overflow-scrolling:touch}.ranking-edit input{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
 @supports(height:100dvh){.game{width:min(100vw,calc(100dvh * 16 / 9));max-height:100dvh}}
+
+/* 仮タイトルとステージ地域表示 */
+.brand{gap:0}.brand strong{font-size:clamp(13px,1.35vw,26px);white-space:nowrap}.brand .stage-row{align-self:flex-start;display:flex;align-items:center;gap:.7em;margin-top:.22em;padding:.3em .75em;color:#fff;background:rgba(0,0,0,.82);text-shadow:none}.brand .stage-row em{margin:0;padding:0;background:none;font:700 clamp(8px,.68vw,13px)/1 Consolas,monospace;font-style:normal;letter-spacing:.14em}.brand .stage-row span{color:#d6f5ff;font:700 clamp(8px,.68vw,13px)/1 Consolas,monospace;letter-spacing:.14em}
+@media(max-width:700px){.brand strong{font-size:clamp(10px,2.6vw,18px)}.brand .stage-row em,.brand .stage-row span{font-size:clamp(7px,1.7vw,10px)}}

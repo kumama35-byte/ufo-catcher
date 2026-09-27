@@ -1,4 +1,4 @@
--- UFO CATCHER online ranking setup
+-- UFO CHACHERっぽいゲーム(仮) online ranking setup
 -- Supabase SQL Editorで実行してください。複数回実行可能な構成です。
 begin;
 
@@ -13,8 +13,14 @@ create table if not exists public.ufo_rankings (
   registered_at timestamptz not null default now(),
   edit_token_hash text not null,
   constraint ufo_rankings_score_range check (score between 0 and 5000000),
-  constraint ufo_rankings_catches_range check (catches between 0 and 195)
+  constraint ufo_rankings_catches_range check (catches between 0 and 330)
 );
+
+-- ステージごとの増加数を最大+6体へ変更した現行仕様（10ステージ最大330体）へ追従する。
+alter table public.ufo_rankings
+  drop constraint if exists ufo_rankings_catches_range;
+alter table public.ufo_rankings
+  add constraint ufo_rankings_catches_range check (catches between 0 and 330);
 
 create index if not exists ufo_rankings_order_idx
   on public.ufo_rankings (score desc, catches desc, registered_at asc, id asc);
@@ -54,7 +60,7 @@ begin
     or p_score is null
     or p_catches is null
     or p_score not between 0 and 5000000
-    or p_catches not between 0 and 195
+    or p_catches not between 0 and 330
     or (p_catches = 0 and p_score <> 0)
     or (p_catches > 0 and p_score < p_catches::bigint * 100)
   then
