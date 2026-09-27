@@ -28,7 +28,7 @@
   const spriteImageCache=[];
   const backgrounds=["assets/background/day.png","assets/background/evening.png","assets/background/night.png"],backgroundNames=["昼","夕方","夜"];
   // 背景画像上で陸地に当たる地点だけを登録する。
-  const LAND_SPOTS=[[39,24],[43,23],[47,25],[52,27],[58,28],[64,30],[71,31],[78,34],[85,38],[89,43],[17,61],[21,56],[23,52],[27,63],[29,57],[31,49],[34,47],[36,39],[39,36],[41,58],[43,50],[45,29],[47,42],[49,58],[52,35],[54,46],[56,30],[58,52],[59,36],[62,55],[65,44],[68,48],[70,34],[73,36],[75,52],[77,48],[82,41],[10,70],[14,76],[20,73],[25,68],[31,65],[37,64],[44,67],[50,68],[56,65]];
+  const LAND_SPOTS=[[39,24],[43,23],[47,25],[52,27],[58,28],[64,30],[71,31],[78,34],[17,61],[21,56],[23,52],[24,59],[29,57],[30,54],[31,49],[33,58],[34,47],[36,39],[36,53],[39,36],[39,48],[41,58],[42,45],[43,50],[45,29],[46,47],[47,42],[48,53],[49,58],[52,35],[53,55],[54,46],[56,30],[57,58],[58,52],[59,36],[61,51],[62,55],[65,44],[66,47],[68,48],[69,42],[70,34],[73,36],[75,52],[77,48],[10,70],[14,76],[20,73],[44,67],[50,68],[56,65]];
   const CAPTURE_ZONES={center:2.1,ring:4,beam:7.5};
   const TARGET_BOUNDS={minY:touchMode?23:19,maxY:88,maxX:92};
 
@@ -58,8 +58,8 @@
 
   function spawnCritters(count){
     els.objects.innerHTML="";critters=[];const pool=[],extraAnimal=count%2&&Math.random()<.5?1:0,animalCount=Math.floor(count/2)+extraAnimal,humanCount=count-animalCount;for(let i=0;i<animalCount;i++)pool.push(TYPES[Math.floor(Math.random()*TYPES.length)]);for(let i=0;i<humanCount;i++)pool.push(HUMAN_TYPES[Math.floor(Math.random()*HUMAN_TYPES.length)]);pool.sort(()=>Math.random()-.5);
-    const shuffled=[...LAND_SPOTS].sort(()=>Math.random()-.5),spots=Array.from({length:count},(_,i)=>{const base=shuffled[i%shuffled.length],lap=Math.floor(i/shuffled.length);return[base[0]+(lap%2?2:-2)*lap,base[1]+(lap%3-1)*2]});
-    spots.forEach(([baseX,baseY],index)=>{const cx=baseX+(Math.random()-.5)*1.5,cy=baseY+(Math.random()-.5),type=pool[index],el=document.createElement("div");el.className=`critter critter-${type.id}`;el.dataset.name=type.name;el.dataset.score=type.score;el.style.left=`${cx}%`;el.style.top=`${cy}%`;el.innerHTML=`<span class="sprite sprite-art sprite-${type.id}" data-kind="${type.id}" aria-hidden="true"></span><span class="label">${type.name} ${type.score}</span>`;el.querySelector(".sprite-art").style.backgroundImage=`url("${frameUrl(type.id,1)}")`;els.objects.append(el);critters.push({el,x:cx,y:cy,type})})
+    const shuffled=[...LAND_SPOTS].sort(()=>Math.random()-.5),spots=Array.from({length:count},(_,i)=>{const base=shuffled[i%shuffled.length],lap=Math.floor(i/shuffled.length),offset=lap?(i%2?.8:-.8):0;return[base[0]+offset,base[1]+(lap?(i%3-1)*.55:0)]});
+    spots.forEach(([baseX,baseY],index)=>{const cx=baseX+(Math.random()-.5),cy=baseY+(Math.random()-.5)*.7,type=pool[index],el=document.createElement("div");el.className=`critter critter-${type.id}`;el.dataset.name=type.name;el.dataset.score=type.score;el.style.left=`${cx}%`;el.style.top=`${cy}%`;el.innerHTML=`<span class="sprite sprite-art sprite-${type.id}" data-kind="${type.id}" aria-hidden="true"></span><span class="label">${type.name} ${type.score}</span>`;el.querySelector(".sprite-art").style.backgroundImage=`url("${frameUrl(type.id,1)}")`;els.objects.append(el);critters.push({el,x:cx,y:cy,type})})
   }
 
   function updateUI(){
