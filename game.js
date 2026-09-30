@@ -111,7 +111,9 @@
   els.game.addEventListener("pointercancel",()=>{pointerActive=false});
   els.game.addEventListener("lostpointercapture",()=>{pointerActive=false});
   ["selectstart","dragstart","contextmenu"].forEach(type=>els.game.addEventListener(type,event=>{if(!isUIEvent(event))event.preventDefault()}));
-  els.game.addEventListener("gesturestart",event=>event.preventDefault(),{passive:false});
+  ["gesturestart","gesturechange","gestureend"].forEach(type=>document.addEventListener(type,event=>{if(!isUIEvent(event))event.preventDefault()},{passive:false}));
+  els.game.addEventListener("touchmove",event=>{if(event.touches.length>1&&!isUIEvent(event))event.preventDefault()},{passive:false});
+  els.game.addEventListener("dblclick",event=>{if(!isUIEvent(event))event.preventDefault()});
   [els.bgmToggle,els.seToggle,els.replayCredits,els.restartGame].forEach(button=>button.addEventListener("pointerdown",event=>event.stopPropagation()));
   els.bgmToggle.addEventListener("click",event=>{event.stopPropagation();bgmEnabled=!bgmEnabled;if(bgmEnabled)playBGM();else bgm.pause();updateAudioButtons()});
   bgm.addEventListener("ended",()=>{if(endingMode)return;bgmTrackIndex=(bgmTrackIndex+1)%bgmTracks.length;bgm.src=bgmTracks[bgmTrackIndex].src;updateAudioButtons();playBGM()});
